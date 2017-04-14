@@ -24,6 +24,7 @@ object Dependencies {
     val jaxbCore         = "2.3.0"
     val jaxbImpl         = "2.3.0"
     val activation       = "1.1.1"
+    val codemodel        = "2.6"
     // Scala
     val schemaddl        = "0.7.0"
     val scopt            = "3.5.0"
@@ -44,11 +45,13 @@ object Dependencies {
     val jaxbCore         = "com.sun.xml.bind"           %  "jaxb-core"                 % V.jaxbCore
     val jaxbImpl         = "com.sun.xml.bind"           %  "jaxb-impl"                 % V.jaxbImpl
     val activation       = "javax.activation"           %  "activation"                % V.activation
+    val codemodel        = "com.sun.codemodel"          %  "codemodel"                 % V.codemodel
     // Scala
     val schemaddl        = "com.snowplowanalytics"      %% "schema-ddl"                % V.schemaddl
     val scopt            = "com.github.scopt"           %% "scopt"                     % V.scopt
     val scalajHttp       = "org.scalaj"                 %% "scalaj-http"               % V.scalajHttp
     val awscala          = "com.github.seratch"         %% "awscala"                   % V.awscala
+
     // Scala (test only)
     val specs2           = "org.specs2"                 %% "specs2-core"               % V.specs2         % "test"
     val scalaCheck       = "org.scalacheck"             %% "scalacheck"                % V.scalaCheck     % "test"

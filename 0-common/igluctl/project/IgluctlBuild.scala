@@ -39,6 +39,7 @@ object IgluctlBuild extends Build {
         Libraries.jaxbCore,
         Libraries.jaxbImpl,
         Libraries.activation,
+        Libraries.codemodel,
         // Scala
         Libraries.schemaddl,
         Libraries.scopt,
