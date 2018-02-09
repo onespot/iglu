@@ -23,9 +23,9 @@ object BuildSettings {
   // Basic settings for our app
   lazy val basicSettings = Seq[Setting[_]](
     organization          :=  "com.snowplowanalytics",
-    version               :=  "0.5.0",
+    version               :=  "0.5.2-SNAPSHOT",
     description           :=  "Set of Abstract Syntax Trees for various DDL and Schema formats",
-    scalaVersion          :=  "2.10.6",
+    scalaVersion          :=  "2.11.8",
     crossScalaVersions    :=  Seq("2.10.6", "2.11.8"),
     scalacOptions         :=  Seq("-deprecation", "-encoding", "utf8",
                                   "-unchecked", "-feature",

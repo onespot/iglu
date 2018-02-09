@@ -38,6 +38,7 @@ case class Command(
 
   // ddl
   output:          Option[File]    = None,
+  location:        Option[String]  = None,
   db:              String          = "redshift",
   withJsonPaths:   Boolean         = false,
   rawMode:         Boolean         = false,
@@ -71,6 +72,8 @@ case class Command(
   def toCommand: Option[Command.CtlCommand] = command match {
     case Some("static generate") => Some(
       GenerateCommand(input.get, output.getOrElse(new File(".")), db,withJsonPaths, rawMode, schema, varcharSize, splitProduct, noHeader, force))
+    case Some("static spectrum") => Some(
+      GenerateSpectrumCommand(input.get,location.get, output.getOrElse(new File(".")), db,withJsonPaths, rawMode, schema, varcharSize, splitProduct, noHeader, force))
     case Some("static push") =>
       Some(PushCommand(registryRoot.get, apiKey.get, input.get, isPublic))
     case Some("static s3cp") =>
@@ -88,7 +91,7 @@ object Command {
 
   // Type class instance to parse UUID
   implicit val uuidRead = scopt.Read.reads(UUID.fromString)
-  
+
   implicit val httpUrlRead: scopt.Read[HttpUrl] = scopt.Read.reads { s =>
     PushCommand.parseRegistryRoot(s) match {
       case \/-(httpUrl) => httpUrl
@@ -138,6 +141,67 @@ object Command {
             arg[File]("input")
               action { (x, c) => c.copy(input = Some(x)) } required()
               text "Path to single JSON schema or directory with JSON Schemas",
+
+            opt[File]("output")
+              action { (x, c) => c.copy(output = Some(x)) }
+              valueName "<path>"
+              text "Directory to put generated data\t\tDefault: current dir",
+
+            opt[String]("dbschema")
+              action { (x, c) => c.copy(schema = Some(x)) }
+              valueName "<name>"
+              text "Redshift schema name\t\t\t\tDefault: atomic",
+
+            opt[String]("db")
+              action { (x, c) => c.copy(db = x) }
+              valueName "<name>"
+              text "DB to which we need to generate DDL\t\tDefault: redshift",
+
+            opt[Int]("varchar-size")
+              action { (x, c) => c.copy(varcharSize = x) }
+              valueName "<n>"
+              text "Default size for varchar data type\t\tDefault: 4096",
+
+            opt[Unit]("with-json-paths")
+              action { (_, c) => c.copy(withJsonPaths = true) }
+              text "Produce JSON Paths files with DDL",
+
+            opt[Unit]("raw-mode")
+              action { (_, c) => c.copy(rawMode = true) }
+              text "Produce raw DDL without Snowplow-specific data",
+
+            opt[Unit]("split-product")
+              action { (_, c) => c.copy(splitProduct = true) }
+              text "Split product types (like [string,integer]) into separate columns",
+
+            opt[Unit]("no-header")
+              action { (_, c) => c.copy(noHeader = true) }
+              text "Do not place header comments into output DDL",
+
+            opt[Unit]("force")
+              action { (_, c) => c.copy(force = true) }
+              text "Force override existing manually-edited files\n",
+
+            checkConfig {
+              case command: Command if command.withJsonPaths && command.splitProduct =>
+                failure("Options --with-json-paths and --split-product cannot be used together")
+              case _ => success
+            }
+          ),
+
+        cmd("spectrum")
+          .action(subcommand("spectrum"))
+          .text("Generate DDL out of JSON Schema\n")
+          .children(
+
+            arg[File]("input")
+              action { (x, c) => c.copy(input = Some(x)) } required()
+              text "Path to single JSON schema or directory with JSON Schemas",
+
+            opt[String]("location")
+              action { (x, c) => c.copy(location = Some(x)) } required()
+              valueName "<location>"
+              text "S3 location of root context data i.e. s3://onespot-shared-production/var/log/snowplow_tracker/shredded/parquet/contexts/",
 
             opt[File]("output")
               action { (x, c) => c.copy(output = Some(x)) }

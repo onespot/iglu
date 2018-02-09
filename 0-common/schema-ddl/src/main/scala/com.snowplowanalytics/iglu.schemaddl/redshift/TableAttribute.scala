@@ -16,17 +16,26 @@ package com.snowplowanalytics.iglu.schemaddl.redshift
 import scalaz.NonEmptyList
 
 /**
- * table_attributes are:
- * [ DISTSTYLE { EVEN | KEY | ALL } ]
- * [ DISTKEY ( column_name ) ]
- * [ [COMPOUND | INTERLEAVED ] SORTKEY ( column_name [, ...] ) ]
- */
+  * table_attributes are:
+  * [ DISTSTYLE { EVEN | KEY | ALL } ]
+  * [ DISTKEY ( column_name ) ]
+  * [ [COMPOUND | INTERLEAVED ] SORTKEY ( column_name [, ...] ) ]
+  */
 sealed trait TableAttribute extends Ddl
 
 sealed trait DiststyleValue extends Ddl
-case object Even extends DiststyleValue { def toDdl = "EVEN" }
-case object Key extends DiststyleValue { def toDdl = "KEY" }
-case object All extends DiststyleValue { def toDdl = "ALL" }
+
+case object Even extends DiststyleValue {
+  def toDdl = "EVEN"
+}
+
+case object Key extends DiststyleValue {
+  def toDdl = "KEY"
+}
+
+case object All extends DiststyleValue {
+  def toDdl = "ALL"
+}
 
 sealed trait Sortstyle extends Ddl
 
@@ -50,4 +59,17 @@ case class DistKeyTable(columnName: String) extends TableAttribute {
 // Don't confuse with redshift.SortKey which is applicable for columns
 case class SortKeyTable(sortstyle: Option[Sortstyle], columns: NonEmptyList[String]) extends TableAttribute {
   def toDdl = sortstyle.map(_.toDdl + " ").getOrElse("") + "SORTKEY (" + columns.list.mkString(",") + ")"
+}
+
+
+case class PartitionedBy(columnName: String) extends TableAttribute {
+  def toDdl = s"PARTITIONED BY ($columnName timestamp)"
+}
+
+case class StoredAs(storedAs: String) extends TableAttribute {
+  def toDdl = s"STORED AS $storedAs"
+}
+
+case class Location(location: String) extends TableAttribute {
+  def toDdl = s"location '$location'"
 }

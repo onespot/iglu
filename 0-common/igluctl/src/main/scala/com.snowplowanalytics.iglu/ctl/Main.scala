@@ -24,6 +24,8 @@ object Main extends App {
       s3cp.process()
     case Some((_, Some(java : GenerateJavaCommand)))  =>
       java.processJava()
+    case Some((_, Some(spectrum : GenerateSpectrumCommand)))  =>
+      spectrum.processDdl()
     case Some((c, _)) if c.command.isEmpty || c.command.contains("static")=>
       Command.cliParser.showUsageAsError()
     case _ =>

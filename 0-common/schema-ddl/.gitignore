@@ -11,6 +11,6 @@ lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
-
+.idea
 # Don't include VERSION file
 VERSION
