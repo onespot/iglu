@@ -121,7 +121,6 @@ object DdlGenerator {
     val tableAttributes = Set[TableAttribute]( // Snowplow-specific attributes
       PartitionedBy("dt"),
       StoredAs("PARQUET"),
-      // Location(s"s3://onespot-shared-production/var/log/snowplow_tracker/shredded/parquet/contexts/${name.replaceAll("_1", "")}")
       Location(s"$location/${name.replaceAll("_1", "")}")
     )
 

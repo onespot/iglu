@@ -201,7 +201,7 @@ object Command {
             opt[String]("location")
               action { (x, c) => c.copy(location = Some(x)) } required()
               valueName "<location>"
-              text "S3 location of root context data i.e. s3://onespot-shared-production/var/log/snowplow_tracker/shredded/parquet/contexts/",
+              text "S3 location of root context data i.e. s3://mybucket/path",
 
             opt[File]("output")
               action { (x, c) => c.copy(output = Some(x)) }
